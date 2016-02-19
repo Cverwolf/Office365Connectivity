@@ -68,12 +68,13 @@ Function Connect-O365 {
     Connect-o365
     
 .NOTES 
+    Version    : 2.0.0
     Author     : Ryan Coates - ryan.coates@inquisitivegeek.com
     Attrib     : Steve @ PowerShell Blogger for original codebase
 .LINK 
     Homepage   : http://inquisitivegeek.com
-    ScriptPage : https://github.com/ryandcoates/rdc-powershell-pub/blob/master/Office365Connectivity.ps1
-    ScriptRAW  : https://github.com/ryandcoates/rdc-powershell-pub/raw/master/Office365Connectivity.ps1
+    ScriptPage : https://github.com/ryandcoates/Office365Connectivity
+    ScriptRAW  : https://raw.githubusercontent.com/ryandcoates/Office365Connectivity/master/Office365Connectivity.ps1
 #>        
     [CmdletBinding()]
     Param(
