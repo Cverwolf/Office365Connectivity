@@ -79,12 +79,19 @@ Function Connect-O365 {
     Param(
     [Parameter(Mandatory=$false)]
     [string]$client,
+    [Parameter(Mandatory=$false)]
+    [System.Object]$Credential,
+
     [switch]$getprereq
     )
 
 # Write out starting ErrorActionPreference prior to changing 
-$startErrorAction = $erroractionpreference
-$ea = "SilentlyContinue"
+$startErrorAction = $ErrorActionPreference
+$startWarningAction = $WarningPreference
+$WarningPreference = "SilentlyContinue"
+$ErrorActionPreference = "SilentlyContinue"
+
+
 $clientURLPrefix = "?DelegatedOrg="
 $clientURL = $ClientURLPrefix +$Client
 
@@ -111,8 +118,16 @@ If ($getprereq -eq $true){
 #              Standard Operation, Connect to available modules            #
 ############################################################################
 
-# Import Credentiials from user
-$o365Creds = Get-Credential # Get your 365 credentials for all connections
+# Import Credentiials from user directly or via input variable
+If ($Credential -ne $null){
+    $o365Creds = $Credential
+    }
+    
+Else{
+    $o365Creds = Get-Credential # Get your 365 credentials for all connections
+    }
+
+# Load modules that test OK
 
 If ($MSOLTrue -eq $true){
     Write-Host "Importing $MSOLModname" -ForegroundColor Green
@@ -138,16 +153,25 @@ If ($SFBTrue -eq $true){
     Import-PSSession $o365sfboSession}
 Else {Write-Warning "Skype for Business Online module is not present, use ./Connect-o365 -getprereq"}
  
-
+# Create and Import Exchange PSSession
 $o365exchangeSession = New-PSSession -Name "o365Exchange" -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential $o365Creds -Authentication "Basic" -AllowRedirection
 Write-Host "Connecting to Exchange Online" -ForegroundColor Green
 Import-PSSession $o365exchangeSession -DisableNameChecking -Prefix eo
- 
 
+# Create and Import Exchange Online Protection PSSession
 $o365ccSession = New-PSSession -Name "o365Protect" -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.compliance.protection.outlook.com/powershell-liveid/" -Credential $o365Creds -Authentication "Basic" -AllowRedirection
 Write-Host "Connecting to Exchange Online Protection" -ForegroundColor Green
 Import-PSSession $o365ccSession -Prefix eop
 
+##############################################
+#             Script Cleanup                 #
+##############################################
+
 # Return ErrorActionPreference to start value
 $ErrorActionPreference = $startErrorAction
+$WarningPreference = $startWarningAction
+
+#Clear $o365creds
+#Remove-Variable o365Creds
+
 }
