@@ -131,37 +131,37 @@ Else{
 # Load modules that test OK
 
 If ($MSOLTrue -eq $true){
-    Write-Host "Importing $MSOLModname" -ForegroundColor Green
+    Write-Output "Importing $MSOLModname"
     Import-Module $MSOLModname
-    Write-Host "Connecting to MSOL" -ForegroundColor Green
+    Write-Output "Connecting to MSOL"
     Connect-MsolService -Credential $o365Creds}
 Else {Write-Warning "MSOL module is not present, use ./Connect-o365 -getprereq"}
 
 
 If ($SPTrue -eq $true){
-    Write-Host "Importing $SPModName" -ForegroundColor Green
+    Write-Output "Importing $SPModName"
     Import-Module $SPModName -DisableNameChecking
-    Write-Host "Connecting to SPOnline"
+    Write-Output "Connecting to SPOnline"
     Connect-SPOService -Url https://biib-admin.sharepoint.com -credential $o365Creds}
 Else {Write-Warning "SPOnline module is not present, use ./Connect-o365 -getprereq"}
  
 
 If ($SFBTrue -eq $true){
-    Write-Host "Importing $SFBModName"
+    Write-Output "Importing $SFBModName"
     Import-Module $SFBModName
     $o365sfboSession = New-CsOnlineSession -Credential $o365Creds -OverrideAdminDomain "biib.onmicrosoft.com"
-    Write-Host "Connecting to Skype for Business Online" -ForegroundColor Green
+    Write-Output "Connecting to Skype for Business Online"
     Import-PSSession $o365sfboSession}
 Else {Write-Warning "Skype for Business Online module is not present, use ./Connect-o365 -getprereq"}
  
 # Create and Import Exchange PSSession
 $o365exchangeSession = New-PSSession -Name "o365Exchange" -ConfigurationName Microsoft.Exchange -ConnectionUri "https://outlook.office365.com/powershell-liveid/" -Credential $o365Creds -Authentication "Basic" -AllowRedirection
-Write-Host "Connecting to Exchange Online" -ForegroundColor Green
+Write-Output "Connecting to Exchange Online"
 Import-PSSession $o365exchangeSession -DisableNameChecking -Prefix eo
 
 # Create and Import Exchange Online Protection PSSession
 $o365ccSession = New-PSSession -Name "o365Protect" -ConfigurationName Microsoft.Exchange -ConnectionUri "https://ps.compliance.protection.outlook.com/powershell-liveid/" -Credential $o365Creds -Authentication "Basic" -AllowRedirection
-Write-Host "Connecting to Exchange Online Protection" -ForegroundColor Green
+Write-Output "Connecting to Exchange Online Protection"
 Import-PSSession $o365ccSession -Prefix eop
 
 ##############################################
